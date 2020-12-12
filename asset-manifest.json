@@ -1,0 +1,22 @@
+{
+  "files": {
+    "main.css": "/Nathanllee1/Transcript/static/css/main.0d1cb2bf.chunk.css",
+    "main.js": "/Nathanllee1/Transcript/static/js/main.b094002a.chunk.js",
+    "main.js.map": "/Nathanllee1/Transcript/static/js/main.b094002a.chunk.js.map",
+    "runtime-main.js": "/Nathanllee1/Transcript/static/js/runtime-main.e9480c59.js",
+    "runtime-main.js.map": "/Nathanllee1/Transcript/static/js/runtime-main.e9480c59.js.map",
+    "static/js/2.3d9724d8.chunk.js": "/Nathanllee1/Transcript/static/js/2.3d9724d8.chunk.js",
+    "static/js/2.3d9724d8.chunk.js.map": "/Nathanllee1/Transcript/static/js/2.3d9724d8.chunk.js.map",
+    "static/js/3.d30d91ff.chunk.js": "/Nathanllee1/Transcript/static/js/3.d30d91ff.chunk.js",
+    "static/js/3.d30d91ff.chunk.js.map": "/Nathanllee1/Transcript/static/js/3.d30d91ff.chunk.js.map",
+    "index.html": "/Nathanllee1/Transcript/index.html",
+    "static/css/main.0d1cb2bf.chunk.css.map": "/Nathanllee1/Transcript/static/css/main.0d1cb2bf.chunk.css.map",
+    "static/js/2.3d9724d8.chunk.js.LICENSE.txt": "/Nathanllee1/Transcript/static/js/2.3d9724d8.chunk.js.LICENSE.txt"
+  },
+  "entrypoints": [
+    "static/js/runtime-main.e9480c59.js",
+    "static/js/2.3d9724d8.chunk.js",
+    "static/css/main.0d1cb2bf.chunk.css",
+    "static/js/main.b094002a.chunk.js"
+  ]
+}

@@ -31,16 +31,6 @@ function App() {
       ffmpeg.FS('writeFile', "vid.mp4", await fetchFile(file))
       const data = ffmpeg.FS('readFile', 'vid.mp4');
       await setVideoSrc(URL.createObjectURL(new Blob([data.buffer], { type: 'video/mp4' })));
-
-      /*
-      ffmpeg.FS('writeFile', "test.mp4", await fetchFile(file))
-      setMessage("File read")
-      await ffmpeg.run('-i', 'test.mp4', '-ss','00:08:23', '-t', '00:40:00', '-c:v', 'copy', '-c:a', 'copy', 'transcode.mp4');
-      //await ffmpeg.run('-i', 'test.mp4', 'transcode.mp4');
-      setMessage('Complete transcoding');
-      const data = ffmpeg.FS('readFile', 'transcode.mp4');
-      setVideoSrc(URL.createObjectURL(new Blob([data.buffer], { type: 'video/mp4' })));
-      */
     }
   }
 
@@ -53,51 +43,55 @@ function App() {
 
     var i = 0;
     while (i < length) {
+      var primaryImageList = []
       // get frame
-      var time = new Date(i * 1000).toISOString().substr(11, 8)
+      var time = secondsToTime(i)
 
       const imgUrl = await getImageAtTime(time, "myimage.jpg");
       //setImg(imgUrl);
+      primaryImageList.push(imgUrl);
 
       var same = true;
       var offset = i + frameSkip;
 
       while (same) {
         // get next frame
-        var nexttime = new Date((offset) * 1000).toISOString().substr(11, 8)
+        var nexttime = secondsToTime(offset)
 
         const img2Url = await getImageAtTime(nexttime, "myimage2.jpg")
         //setImg2(img2Url);
+
         // if meets threshold, add split into document
         if (await compareImages(imgUrl, img2Url, differenceThresh)) { // true is different, false is same
-          console.log('hey')
-          //await ffmpeg.run('-i', 'test.mp4', '-ss','00:08:23', '-t', '00:40:00', '-c:v', 'copy', '-c:a', 'copy', 'transcode.mp4');
 
           setDifference("Found new slide!")
 
-          var diffImage = true; // While the image
+          var diffImage = true;
           var imageList = [];
-          while (diffImage) {
+          while (diffImage) { // Go backwards until the image changes (should be the start)
             offset -= 5;
-            var revtime = new Date((offset) * 1000).toISOString().substr(11, 8)
+            var revtime = secondsToTime(offset)
             const revUrl = await getImageAtTime(revtime, "rev.jpg")
             imageList.push(revUrl);
             console.log(offset);
             if (! (await compareImages(revUrl, imgUrl, differenceThresh))) { // If they're the same image
-              offset += 1
-              addSlide(slides => slides.concat(<Slide key={i} img={imgUrl} time={ new Date((offset) * 1000).toISOString().substr(11, 8)}/>))
+              offset += 5
+
+              var vidUrl = await getVideo(i, offset, "out.mp4")
+              console.log(i, offset)
+
+              addSlide(slides => slides.concat(<Slide vid={vidUrl} key={i} img={imgUrl} time={secondsToTime(offset)}/>))
               incCount(diffCount => diffCount + 1);
               i = offset + 1
 
-              imageList.forEach(url =>{ URL.revokeObjectURL(url); console.log(url)})
+              imageList.forEach(url =>{ URL.revokeObjectURL(url); console.log(url)});
+              primaryImageList.forEach(url =>{ URL.revokeObjectURL(url); console.log(url)});
+
               same = false;
               diffImage = false;
             }
           }
-
-
         }
-
         offset += frameSkip;
       }
 
@@ -105,6 +99,10 @@ function App() {
       i += frameSkip;
       setMessage(i + " " + frameSkip)
     }
+  }
+
+  const secondsToTime = (sec) => {
+    return new Date((sec) * 1000).toISOString().substr(11, 8)
   }
 
   const getImageAtTime = async(time, output) => {
@@ -132,6 +130,13 @@ function App() {
       })
     //console.log(different)
     return different;
+  }
+
+  const getVideo = async(time1, time2, output) => {
+    console.log(secondsToTime(time1))
+    await ffmpeg.run(...(`-i vid.mp4 -ss ${secondsToTime(time1)} -to ${secondsToTime(time2)} -c:v copy -c:a copy ${output}`).split(" "));
+    const vid = await ffmpeg.FS('readFile', output)
+    return URL.createObjectURL(new Blob([vid.buffer], { type: 'video/mp4' }));
   }
 
   const onFileChange = (e: any) => {

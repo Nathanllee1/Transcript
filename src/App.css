@@ -39,3 +39,30 @@
 
 .slides {
 }
+
+Slide {
+  margin-top: 10px;
+}
+
+.slide {
+  display: flex;
+  margin-left: 25%;
+  margin-right: 25%;
+  margin-top: 100px;
+  margin-bottom: 25px;
+}
+
+.text {
+  font-size: 20px;
+  line-height: 25px;
+  margin-left: 20px;
+  text-align: left;
+}
+
+.divider {
+  width: 1233px;
+
+  height: 0px;
+  border: 2px solid #E4E4E4;
+
+}

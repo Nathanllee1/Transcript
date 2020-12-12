@@ -18,6 +18,8 @@ function App() {
 
   const [slides, addSlide] = useState([]);
 
+  const canvas = useRef(null);
+
   const ffmpeg = createFFmpeg({
     log: false,
   });
@@ -152,8 +154,11 @@ function App() {
         onVideoIn(e.target.duration);
       }}></video><br/>
 
+      <canvas ref={canvas}></canvas>
+
       <img width="250" src={imgSrc}></img>
       <img width="250" src={imgSrc2}></img>
+
 
       <p>Measured Difference: {difference}</p>
       <p>Number of slides: {diffCount}</p>

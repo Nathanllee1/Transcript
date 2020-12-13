@@ -1,3 +1,8 @@
+body {
+  background-color: #363B40;
+  color: #DEDEDE;
+}
+
 .App {
   text-align: center;
 }
@@ -42,27 +47,72 @@
 
 Slide {
   margin-top: 10px;
+
 }
 
 .slide {
   display: flex;
-  margin-left: 25%;
-  margin-right: 25%;
+  margin-left: 10%;
+  margin-right: 10%;
   margin-top: 100px;
   margin-bottom: 25px;
+  align-items: center;
 }
 
 .text {
   font-size: 20px;
-  line-height: 25px;
-  margin-left: 20px;
+  line-height: 38px;
+  margin-left: 60px;
   text-align: left;
+  width: 45%;
 }
 
 .divider {
-  width: 1233px;
+  width: 100%;
 
   height: 0px;
-  border: 2px solid #E4E4E4;
+  border: 1px solid #E4E4E4;
 
+}
+
+.timeStamp {
+  font-size: 20px;
+  margin-right: 40px;
+  font-weight: bold;
+}
+
+canvas {
+  display: none;
+}
+
+.mainVid {
+  display: none;
+}
+
+.input {
+  margin-top: 10%;
+  visibility: visible;
+  opacity: 1;
+}
+
+.inputHidden {
+  margin-top: 10%;
+  visibility: hidden;
+  opacity: 0;
+  transition: visibility 0s 2s, opacity 2s linear;
+}
+
+.hidden {
+  display: none;
+}
+
+.header {
+  text-align: left;
+  margin-left: 10px;
+  display: flex;
+  align-items: center;
+}
+
+.name {
+  margin-right: 10px;
 }

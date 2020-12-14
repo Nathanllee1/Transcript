@@ -12,8 +12,6 @@ import LoadingSlide from './loadingSlide'
 function App() {
   const [videoSrc, setVideoSrc] = useState();
   const [file, changeFile] = useState();
-  const [imgSrc, setImg] = useState();
-  const [imgSrc2, setImg2] = useState();
   const [fileUploaded, setUpload] = useState(false);
   const [slides, addSlide] = useState([]);
 
@@ -42,7 +40,7 @@ function App() {
 
       setTimeout(() => {
         changeStart("hidden")
-      }, 2000)
+      }, 1000)
 
       await setVideoSrc(URL.createObjectURL(new Blob([file], { type: 'video/mp4' })));
       setUpload(true);
@@ -58,9 +56,9 @@ function App() {
   const onVideoIn = async (length) => {
     await ffmpeg.load();
     ffmpeg.FS('writeFile', "vid.mp4", await fetchFile(file)) // Write mp4 file to memory
-    const differenceThresh = 4;
+    const differenceThresh = 7;
 
-    var i = 0;
+    var i = 300;
     while (i < length) {
       // get frame
       var time = secondsToTime(i)
@@ -75,15 +73,17 @@ function App() {
 
         // if meets threshold, add split into document
         if (await compareImages(imgUrl, img2Url, differenceThresh) && (j - i > 30)) { // true is different, false is same // plus size should be mroe than 30 seconds
-          var vidUrl = await getVideo(i, j, "out.mp4")
-          addSlide(slides => slides.concat(<Slide vid={vidUrl} key={i} img={imgUrl} time={secondsToTime(i)}/>))
+          var vidUrl = await getVideo(i, j, "out.mp4");
+          await ffmpeg.run(...("-i out.mp4 out.mp3").split(" "));
+          var audUrl = URL.createObjectURL(new Blob([await ffmpeg.FS('readFile', "out.mp3").buffer], { type: 'audio/mp3'}));
+          addSlide(slides => slides.concat(<Slide aud={audUrl} vid={vidUrl} key={i} img={imgUrl} time={secondsToTime(i)}/>))
 
           same = false;
           i = j + 2;
+        } else {
+          j += 1;
         }
-        j += 1;
       }
-      i += 1;
     }
 
     setProgress(0);
@@ -104,7 +104,6 @@ function App() {
     return blobURL;
   }
 
-
   var different;
   const compareImages = async (img1, img2, threshold) => {
     var diff = await resemble(img1)
@@ -112,6 +111,7 @@ function App() {
       .onComplete(data => {
         //console.log((data.rawMisMatchPercentage), typeof(threshold))
         if (data.rawMisMatchPercentage > threshold) {
+          console.log(data.rawMisMatchPercentage)
           different = true;
         } else {
           different = false;
@@ -143,7 +143,9 @@ function App() {
       <LoadingBar color="#f11946" progress={progress} onLoaderFinished={() => setProgress(0)}/>
 
       <div className={startingData}>
-        <h1>Upload a file to get started</h1>
+        <p>This tool converts a recording of a lecture into a readable and searchable article. </p>
+        <p>Good lectures to use are voiceovers of slides without much else going on</p><br/>
+        <h2>Upload a file to get started</h2>
         <input type="file" onChange={onFileChange} />
         <button onClick={onFileUpload}>
           Upload!

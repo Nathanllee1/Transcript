@@ -60,7 +60,7 @@ Slide {
 }
 
 .text {
-  font-size: 20px;
+  font-size: larger;
   line-height: 38px;
   margin-left: 60px;
   text-align: left;
@@ -95,11 +95,12 @@ canvas {
   opacity: 1;
 }
 
+
 .inputHidden {
   margin-top: 10%;
   visibility: hidden;
   opacity: 0;
-  transition: visibility 0s 2s, opacity 2s linear;
+  transition: visibility 0s 1s, opacity 1s linear;
 }
 
 .hidden {

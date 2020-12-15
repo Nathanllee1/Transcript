@@ -5,62 +5,70 @@ const MemoryStream = require('memory-stream');
 const Duplex = require('stream').Duplex;
 const Wav = require('node-wav');
 
-let modelPath = './models/deepspeech-0.8.0-models.pbmm';
+module.exports = function (file) {
 
-let model = new DeepSpeech.Model(modelPath);
+	var returnText;
 
-let desiredSampleRate = model.sampleRate();
+	let modelPath = './models/deepspeech-0.8.0-models.pbmm';
 
-let scorerPath = './models/deepspeech-0.8.0-models.scorer';
+	let model = new DeepSpeech.Model(modelPath);
 
-model.enableExternalScorer(scorerPath);
+	let desiredSampleRate = model.sampleRate();
 
-let audioFile = process.argv[2] || './audio/2830-3980-0043.wav';
+	let scorerPath = './models/deepspeech-0.8.0-models.scorer';
 
-if (!Fs.existsSync(audioFile)) {
-	console.log('file missing:', audioFile);
-	process.exit();
-}
+	model.enableExternalScorer(scorerPath);
 
-const buffer = Fs.readFileSync(audioFile);
-const result = Wav.decode(buffer);
+	let audioFile = file
 
-if (result.sampleRate < desiredSampleRate) {
-	console.error('Warning: original sample rate (' + result.sampleRate + ') is lower than ' + desiredSampleRate + 'Hz. Up-sampling might produce erratic speech recognition.');
-}
-
-function bufferToStream(buffer) {
-	let stream = new Duplex();
-	stream.push(buffer);
-	stream.push(null);
-	return stream;
-}
-
-let audioStream = new MemoryStream();
-bufferToStream(buffer).
-pipe(Sox({
-	global: {
-		'no-dither': true,
-	},
-	output: {
-		bits: 16,
-		rate: desiredSampleRate,
-		channels: 1,
-		encoding: 'signed-integer',
-		endian: 'little',
-		compression: 0.0,
-		type: 'raw'
+	if (!Fs.existsSync(audioFile)) {
+		console.log('file missing:', audioFile);
+		process.exit();
 	}
-})).
-pipe(audioStream);
 
-audioStream.on('finish', () => {
-	let audioBuffer = audioStream.toBuffer();
+	const buffer = Fs.readFileSync(audioFile);
+	const result = Wav.decode(buffer);
 
-	const audioLength = (audioBuffer.length / 2) * (1 / desiredSampleRate);
-	console.log('audio length', audioLength);
+	if (result.sampleRate < desiredSampleRate) {
+		console.error('Warning: original sample rate (' + result.sampleRate + ') is lower than ' + desiredSampleRate + 'Hz. Up-sampling might produce erratic speech recognition.');
+	}
 
-	let result = model.stt(audioBuffer);
+	function bufferToStream(buffer) {
+		let stream = new Duplex();
+		stream.push(buffer);
+		stream.push(null);
+		return stream;
+	}
 
-	console.log('result:', result);
-});
+	let audioStream = new MemoryStream();
+	bufferToStream(buffer).
+	pipe(Sox({
+		global: {
+			'no-dither': true,
+		},
+		output: {
+			bits: 16,
+			rate: desiredSampleRate,
+			channels: 1,
+			encoding: 'signed-integer',
+			endian: 'little',
+			compression: 0.0,
+			type: 'raw'
+		}
+	})).
+	pipe(audioStream);
+
+	audioStream.on('finish', () => {
+		let audioBuffer = audioStream.toBuffer();
+
+		const audioLength = (audioBuffer.length / 2) * (1 / desiredSampleRate);
+		console.log('audio length', audioLength);
+
+		let result = model.stt(audioBuffer);
+
+		console.log('result:', result);
+		returnText = result
+	});
+
+	return returnText;
+}

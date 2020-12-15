@@ -10,19 +10,23 @@ const path = require('path');
 const app = express()
 const port = 4000
 
-/*
-app.post('/speechToText', upload.single('soundBlob'), (req, res) => {
-  let uploadLocation = __dirname + '/public/uploads/' + req.file.originalname
-  fs.writeFileSync(uploadLocation, Buffer.from(new Uint8Array(req.file.buffer)));
-})
-*/
-app.use(bodyParser.raw({ type: 'audio/wav'}));
+const msg = require('./index.js')
 
-app.post('/speechToText', function (req, res) {
+app.use(bodyParser.raw({limit: '100000mb'}));
+
+
+app.post('/speechToText', type, async function(req, res) {
    console.log(req.body);
    console.log(req.file);
    // do stuff with file
-   fs.writeFileSync("/public/uploads", Buffer.from(new Uint8Array(req.file.buffer)));
+   var filename = __dirname + "/public/uploads/file.wav"
+
+   await fs.writeFileSync(path.join(filename), Buffer.from(new Uint8Array(req.body.buffer)));
+
+   var text = await msg(filename);
+
+   res.statusCode = 200
+   res.json({'text': text})
 });
 
 

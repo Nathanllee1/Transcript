@@ -48,11 +48,12 @@ function App() {
   }
 
   const onVideoIn = async (length) => {
+    var reader = new FileReader();
     await ffmpeg.load();
     ffmpeg.FS('writeFile', "vid.mp4", await fetchFile(file)) // Write mp4 file to memory
     const differenceThresh = 7;
 
-    var i = 300;
+    var i = 0;
     while (i < length) {
       // get frame
       var time = secondsToTime(i)
@@ -70,6 +71,7 @@ function App() {
           var vidUrl = await getVideo(i, j, "out.mp4");
           await ffmpeg.run(...("-i out.mp4 out.wav").split(" "));
           var audUrl = new Blob([await ffmpeg.FS('readFile', "out.wav").buffer], { type: 'audio/mp3'});
+
           addSlide(slides => slides.concat(<Slide aud={audUrl} vid={vidUrl} key={i} img={imgUrl} time={secondsToTime(i)}/>))
 
           same = false;

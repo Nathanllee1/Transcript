@@ -1,3 +1,5 @@
 /node_modules
 /models
 /audio
+/frontend/public/output.mp4
+/build/output.mp4

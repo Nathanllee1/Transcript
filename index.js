@@ -1,74 +1,64 @@
 const DeepSpeech = require('deepspeech');
-const Fs = require('fs');
+const fs = require('fs');
 const Sox = require('sox-stream');
 const MemoryStream = require('memory-stream');
 const Duplex = require('stream').Duplex;
 const Wav = require('node-wav');
+import 'semantic-ui-css/semantic.min.css'
 
 module.exports = function (file) {
 
-	var returnText;
+    var returnText;
 
-	let modelPath = './models/deepspeech-0.8.0-models.pbmm';
+    let modelPath = './models/deepspeech-0.8.0-models.pbmm';
+    let scorerPath = './models/deepspeech-0.8.0-models.scorer';
 
-	let model = new DeepSpeech.Model(modelPath);
+    let model = new DeepSpeech.Model(modelPath);
 
-	let desiredSampleRate = model.sampleRate();
+    let desiredSampleRate = model.sampleRate();
 
-	let scorerPath = './models/deepspeech-0.8.0-models.scorer';
 
-	model.enableExternalScorer(scorerPath);
+    model.enableExternalScorer(scorerPath);
 
-	let audioFile = file
+    let audioFile = file
 
-	if (!Fs.existsSync(audioFile)) {
-		console.log('file missing:', audioFile);
-		process.exit();
-	}
+    if (!fs.existsSync(audioFile)) {
+        console.log('file missing:', audioFile);
+        process.exit();
+    }
 
-	const buffer = Fs.readFileSync(audioFile);
-	const result = Wav.decode(buffer);
 
-	if (result.sampleRate < desiredSampleRate) {
-		console.error('Warning: original sample rate (' + result.sampleRate + ') is lower than ' + desiredSampleRate + 'Hz. Up-sampling might produce erratic speech recognition.');
-	}
+    let audioStream = new MemoryStream();
 
-	function bufferToStream(buffer) {
-		let stream = new Duplex();
-		stream.push(buffer);
-		stream.push(null);
-		return stream;
-	}
+    fs.createReadStream(file)
+        .pipe(Sox({
+            global: {
+                'no-dither': true,
+            },
+            output: {
+                bits: 16,
+                rate: desiredSampleRate,
+                channels: 1,
+                encoding: 'signed-integer',
+                endian: 'little',
+                compression: 0.0,
+                type: 'raw'
+            }
+        }))
+        .pipe(audioStream);
 
-	let audioStream = new MemoryStream();
-	bufferToStream(buffer).
-	pipe(Sox({
-		global: {
-			'no-dither': true,
-		},
-		output: {
-			bits: 16,
-			rate: desiredSampleRate,
-			channels: 1,
-			encoding: 'signed-integer',
-			endian: 'little',
-			compression: 0.0,
-			type: 'raw'
-		}
-	})).
-	pipe(audioStream);
 
-	audioStream.on('finish', () => {
-		let audioBuffer = audioStream.toBuffer();
+    return new Promise((resolve, rej) => {
+        audioStream.on('finish', () => {
+            let audioBuffer = audioStream.toBuffer();
 
-		const audioLength = (audioBuffer.length / 2) * (1 / desiredSampleRate);
-		console.log('audio length', audioLength);
+            const audioLength = (audioBuffer.length / 2) * (1 / desiredSampleRate);
+            console.log('audio length', audioLength);
 
-		let result = model.stt(audioBuffer);
+            let result = model.stt(audioBuffer);
 
-		console.log('result:', result);
-		returnText = result
-	});
-
-	return returnText;
-}
+            console.log('result:', result);
+            resolve(result)
+        });
+    })
+};

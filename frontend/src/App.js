@@ -1,13 +1,12 @@
 import React, {useState, useRef, useEffect} from 'react'
-
+import { Loader } from 'semantic-ui-react'
 import { createFFmpeg, fetchFile } from '@ffmpeg/ffmpeg';
 import resemble  from 'resemblejs'
 import './App.css';
 
 import LoadingBar from 'react-top-loading-bar'
-
+import LoadingSlide from './LoadingSlide'
 import Slide  from './slide'
-import LoadingSlide from './loadingSlide'
 
 function App() {
   const [videoSrc, setVideoSrc] = useState();
@@ -22,6 +21,8 @@ function App() {
 
   const [progress, setProgress] = useState(0)
   const [startingData, changeStart] = useState("input")
+
+  //const [loader, startLoader] = use
 
   const ffmpeg = createFFmpeg({
     log: false,
@@ -44,6 +45,16 @@ function App() {
 
       await setVideoSrc(URL.createObjectURL(new Blob([file], { type: 'video/mp4' })));
     }
+  }
+
+  const onDemoClick = async () => {
+
+    changeStart("inputHidden")
+    setVideoSrc("output.mp4")
+    setTimeout(() => {
+      changeStart("hidden")
+    }, 1000)
+
   }
 
   const sleep = (milliseconds) => {
@@ -149,6 +160,13 @@ function App() {
         <button onClick={onFileUpload}>
           Upload!
         </button>
+        <br/>
+        <br/>
+        <h2>Or try a demo</h2>
+        <div>
+          <button onClick={onDemoClick}>Try a demo!</button>
+        </div>
+
       </div>
 
       <video className="mainVid" ref={videoRef} src={videoSrc} width="250" controls

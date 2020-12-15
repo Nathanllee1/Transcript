@@ -21,6 +21,7 @@ app.use(bodyParser.raw({limit: '100000mb'}));
 //Give different filenames to allow for concurrent requests
 let fileCounter = 1;
 app.post('/speechToText', type, async function(req, res) {
+  fileCounter += 1;
    console.log(req.body);
    console.log(req.file);
    // do stuff with file
@@ -29,7 +30,7 @@ app.post('/speechToText', type, async function(req, res) {
    await fs.writeFile(filePath, new Uint8Array(req.body.buffer));
 
    const text = await msg(filePath);
-
+   console.log("after")
    //Clean the file after we're done.
    await fs.unlink(filePath);
 

@@ -17,6 +17,9 @@ function App() {
   const canvasRef = useRef(null);
   const videoRef = useRef(null);
 
+  const [img1, setimg1] = useState();
+  const [img2, setimg2] = useState();
+
   const [progress, setProgress] = useState(0)
   const [startingData, changeStart] = useState("input")
 
@@ -52,10 +55,10 @@ function App() {
     await ffmpeg.load();
     ffmpeg.FS('writeFile', "vid.mp4", await fetchFile(file)) // Write mp4 file to memory
     const differenceThresh = 7;
-
-    var i = 0;
+    var i = 1;
     while (i < length) {
       // get frame
+
       var time = secondsToTime(i)
       const imgUrl = await getImageAtTime(i);
       var same = true;

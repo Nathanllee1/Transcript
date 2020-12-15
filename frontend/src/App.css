@@ -86,7 +86,7 @@ canvas {
 }
 
 .mainVid {
-  display: none;
+  width: 0px;
 }
 
 .input {
@@ -116,4 +116,8 @@ canvas {
 
 .name {
   margin-right: 10px;
+}
+
+img {
+  display: none;
 }

@@ -12,7 +12,6 @@ import LoadingSlide from './loadingSlide'
 function App() {
   const [videoSrc, setVideoSrc] = useState();
   const [file, changeFile] = useState();
-  const [fileUploaded, setUpload] = useState(false);
   const [slides, addSlide] = useState([]);
 
   const canvasRef = useRef(null);
@@ -32,8 +31,6 @@ function App() {
     context.drawImage(videoRef.current, 0, 0, canvasRef.width, canvasRef.height);
   })
 
-
-
   const onFileUpload = async () => {
     if (file) {
       changeStart("inputHidden")
@@ -43,9 +40,6 @@ function App() {
       }, 1000)
 
       await setVideoSrc(URL.createObjectURL(new Blob([file], { type: 'video/mp4' })));
-      setUpload(true);
-
-
     }
   }
 
@@ -74,8 +68,8 @@ function App() {
         // if meets threshold, add split into document
         if (await compareImages(imgUrl, img2Url, differenceThresh) && (j - i > 30)) { // true is different, false is same // plus size should be mroe than 30 seconds
           var vidUrl = await getVideo(i, j, "out.mp4");
-          await ffmpeg.run(...("-i out.mp4 out.mp3").split(" "));
-          var audUrl = URL.createObjectURL(new Blob([await ffmpeg.FS('readFile', "out.mp3").buffer], { type: 'audio/mp3'}));
+          await ffmpeg.run(...("-i out.mp4 out.wav").split(" "));
+          var audUrl = new Blob([await ffmpeg.FS('readFile', "out.wav").buffer], { type: 'audio/mp3'});
           addSlide(slides => slides.concat(<Slide aud={audUrl} vid={vidUrl} key={i} img={imgUrl} time={secondsToTime(i)}/>))
 
           same = false;

@@ -1,51 +1,19 @@
 {
-  "homepage": "https://nathanllee1.github.io/Transcript/",
-  "name": "transcode2",
-  "version": "0.1.0",
-  "private": true,
-  "dependencies": {
-    "@ffmpeg/core": "^0.8.5",
-    "@ffmpeg/ffmpeg": "^0.9.6",
-    "@koale/useworker": "^3.2.1",
-    "@testing-library/jest-dom": "^5.11.4",
-    "@testing-library/react": "^11.1.0",
-    "@testing-library/user-event": "^12.1.10",
-    "react": "^17.0.1",
-    "react-content-loader": "^5.1.4",
-    "react-dom": "^17.0.1",
-    "react-dropzone": "^11.2.4",
-    "react-scripts": "4.0.1",
-    "react-top-loading-bar": "^2.0.1",
-    "resemblejs": "^3.2.5",
-    "web-vitals": "^0.2.4"
-  },
+  "name": "deepspeech-nodejs_wav",
+  "version": "1.0.0",
+  "description": "Simple audio processing",
+  "main": "index.js",
   "scripts": {
-    "predeploy": "npm run build",
-    "deploy": "gh-pages -d build",
-    "start": "react-scripts start",
-    "build": "react-scripts build",
-    "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "start": "node ./index.js"
   },
-  "eslintConfig": {
-    "extends": [
-      "react-app",
-      "react-app/jest"
-    ]
-  },
-  "browserslist": {
-    "production": [
-      ">0.2%",
-      "not dead",
-      "not op_mini all"
-    ],
-    "development": [
-      "last 1 chrome version",
-      "last 1 firefox version",
-      "last 1 safari version"
-    ]
-  },
-  "devDependencies": {
-    "gh-pages": "^3.1.0"
+  "dependencies": {
+    "argparse": "^1.0.10",
+    "body-parser": "^1.19.0",
+    "deepspeech": "0.8.0",
+    "express": "^4.17.1",
+    "multer": "^1.4.2",
+    "node-wav": "0.0.2",
+    "sox-stream": "^2.0.3",
+    "util": "^0.11.1"
   }
 }

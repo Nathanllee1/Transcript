@@ -3,15 +3,12 @@ import { Placeholder, Loader } from 'semantic-ui-react'
 
 function Slide(props) {
 
-
   const [text, setText] = useState("");
   const [spinner, setSpinner] = useState("spinner")
   console.log(props.aud)
 
   const formData = new FormData();
   formData.append('data', props.aud)
-
-
 
   fetch('/speechToText', {
     method: 'post',

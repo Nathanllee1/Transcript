@@ -4,14 +4,13 @@ const Sox = require('sox-stream');
 const MemoryStream = require('memory-stream');
 const Duplex = require('stream').Duplex;
 const Wav = require('node-wav');
-import 'semantic-ui-css/semantic.min.css'
 
 module.exports = function (file) {
 
     var returnText;
 
-    let modelPath = './models/deepspeech-0.8.0-models.pbmm';
-    let scorerPath = './models/deepspeech-0.8.0-models.scorer';
+    let modelPath = './models/deepspeech-0.9.3-models.pbmm';
+    let scorerPath = './models/deepspeech-0.9.3-models.scorer';
 
     let model = new DeepSpeech.Model(modelPath);
 

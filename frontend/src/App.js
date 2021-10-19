@@ -50,7 +50,7 @@ function App() {
   const onDemoClick = async () => {
 
     changeStart("inputHidden")
-    setVideoSrc("output.mp4")
+    setVideoSrc("out.mp4")
     setTimeout(() => {
       changeStart("hidden")
     }, 1000)
@@ -65,7 +65,7 @@ function App() {
     var reader = new FileReader();
     await ffmpeg.load();
     ffmpeg.FS('writeFile', "vid.mp4", await fetchFile(file)) // Write mp4 file to memory
-    const differenceThresh = 7;
+    const differenceThresh = 1;
     var i = 1;
     while (i < length) {
       // get frame
@@ -81,12 +81,12 @@ function App() {
         const img2Url = await getImageAtTime(j)
 
         // if meets threshold, add split into document
-        if (await compareImages(imgUrl, img2Url, differenceThresh) && (j - i > 30)) { // true is different, false is same // plus size should be mroe than 30 seconds
+        if (await compareImages(imgUrl, img2Url, differenceThresh) && (j - i > 2)) { // true is different, false is same // plus size should be mroe than 30 seconds
           var vidUrl = await getVideo(i, j, "out.mp4");
           await ffmpeg.run(...("-i out.mp4 out.wav").split(" "));
           var audUrl = new Blob([await ffmpeg.FS('readFile', "out.wav").buffer], { type: 'audio/mp3'});
 
-          addSlide(slides => slides.concat(<Slide aud={audUrl} vid={vidUrl} key={i} img={imgUrl} time={secondsToTime(i)}/>))
+          addSlide(slides => [...slides, <Slide aud={audUrl} vid={vidUrl} key={i} img={imgUrl} time={secondsToTime(i)}/>])
 
           same = false;
           i = j + 2;
@@ -104,12 +104,12 @@ function App() {
   }
 
 
-  const getImageAtTime = async(time, output) => {
+  const getImageAtTime = async(time) => {
     videoRef.current.currentTime = await time;
 
     await context.drawImage(videoRef.current, 0, 0, canvasRef.current.width, canvasRef.current.height);
 
-    var blobURL = await canvasRef.current.toDataURL();
+    var blobURL = canvasRef.current.toDataURL();
     await sleep(50)
     return blobURL;
   }
@@ -132,17 +132,14 @@ function App() {
   }
 
   const getVideo = async(time1, time2, output) => {
-    console.log(secondsToTime(time1))
     await ffmpeg.run(...(`-i vid.mp4 -ss ${secondsToTime(time1)} -to ${secondsToTime(time2)} -c:v copy -c:a copy ${output}`).split(" "));
     const vid = await ffmpeg.FS('readFile', output)
     return URL.createObjectURL(new Blob([vid.buffer], { type: 'video/mp4' }));
   }
 
-  const onFileChange = (e: any) => {
+  const onFileChange = (e) => {
     changeFile(e.target.files[0]);
   }
-
-
 
   return (
     <div className="App">
@@ -170,16 +167,16 @@ function App() {
       </div>
 
       <video className="mainVid" ref={videoRef} src={videoSrc} width="250" controls
-      onLoadedMetadata={e => {
-        onVideoIn(e.target.duration);
-      }}></video>
+    onLoadedMetadata={e => {
+      onVideoIn(e.target.duration);
+    }}/>
 
       <canvas ref={canvasRef}></canvas>
-      <div className="slides">{slides}</div>
+      <div className="slides">
+        {slides}
+      </div>
     </div>
   );
-
-
 }
 
 export default App;

@@ -9,6 +9,7 @@
     "@testing-library/jest-dom": "^5.11.4",
     "@testing-library/react": "^11.1.0",
     "@testing-library/user-event": "^12.1.10",
+    "http-proxy-middleware": "^2.0.1",
     "react": "^17.0.1",
     "react-content-loader": "^5.1.4",
     "react-dom": "^17.0.1",
@@ -22,7 +23,7 @@
     "predeploy": "npm run build",
     "deploy": "gh-pages -d build",
     "start": "react-scripts start",
-    "build": "react-scripts build  && mv build /home/nathanlee/Workspace/transcode2/",
+    "build": "react-scripts build  && rm -r /home/nathanlee/Workspace/Transcript/build && mv build /home/nathanlee/Workspace/Transcript/",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
   },
